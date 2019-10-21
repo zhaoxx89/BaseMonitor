@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+{% extends 'base.html' %}
+{% block content %}
+<style>
+  .testswitch {
+    position: relative;
+    float: left;
+    width: 80px;
+    margin: 0;
+    -webkit-user-select:none;
+    -moz-user-select:none;
+    -ms-user-select: none;
+}
+
+.testswitch-checkbox {
+    display: none;
+}
+
+.testswitch-label {
+    display: block;
+    overflow: hidden;
+    cursor: pointer;
+    border: 2px solid #999999;
+    border-radius: 20px;
+}
+
+.testswitch-inner {
+    display: block;
+    width: 200%;
+    margin-left: -100%;
+    transition: margin 0.3s ease-in 0s;
+}
+
+.testswitch-inner::before, .testswitch-inner::after {
+    display: block;
+    float: right;
+    width: 50%;
+    height: 30px;
+    padding: 0;
+    line-height: 30px;
+    font-size: 10px;
+    color: white;
+    font-family:
+    Trebuchet, Arial, sans-serif;
+    font-weight: bold;
+    box-sizing: border-box;
+}
+
+.testswitch-inner::after {
+    content: attr(data-on);
+    padding-left: 10px;
+    background-color: #00e500;
+    color: #FFFFFF;
+}
+
+.testswitch-inner::before {
+    content: attr(data-off);
+    padding-right: 10px;
+    background-color: #EEEEEE;
+    color: #999999;
+    text-align: right;
+}
+
+<!--.testswitch-switch {-->
+    <!--position: absolute;-->
+    <!--display: block;-->
+    <!--width: 22px;-->
+    <!--height: 22px;-->
+    <!--margin: 4px;-->
+    <!--background: #FFFFFF;-->
+    <!--top: 0;-->
+    <!--bottom: 0;-->
+    <!--right: 56px;-->
+    <!--border: 2px solid #999999;-->
+    <!--border-radius: 20px;-->
+    <!--transition: all 0.3s ease-in 0s;-->
+<!--}-->
+
+.testswitch-checkbox:checked + .testswitch-label .testswitch-inner {
+    margin-left: 0;
+}
+
+.testswitch-checkbox:checked + .testswitch-label .testswitch-switch {
+    right: 0px;
+}
+</style>
+<!--<link rel="stylesheet" href="css/on_off_switch.css" type="text/css">-->
+        <!--var ckName=new Array();-->
+        <!--ckName[0]="张三";-->
+        <!--ckName[1]="李四";-->
+
+        <!--var officeName=new Array();-->
+       <!--officeName[0]="李老师";-->
+       <!--officeName[1]="王老师";-->
+
+       <!--var bstartTime=new Array();-->
+       <!--bstartTime[0]="2018-05-01";-->
+       <!--bstartTime[1]="2018-05-31";-->
+
+<div class="row-fluid">
+
+    <div class="span3">
+        <div class="well sidebar-nav">
+            <ul class="nav nav-list">
+                <li class="active">
+                    <a href="/ip_manage/">IP列表</a>
+                </li>
+                <li>
+                    <a href="/dev_manage/">设备列表</a>
+                </li>
+                <li>
+                    <a href="/add_ip/">添加IP</a>
+                </li>
+                <!--<li>-->
+                <!--<a href="/add_dev/">添加设备</a>-->
+                <!--</li>-->
+                <li>
+                    <a href="/add_dev/">查看设备</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="span9 well">
+        {% block showpage %}
+        <form class="form-horizontal" role="form" method="get" action="/search_ip/">
+            <div class="control-group">
+                <div class="controls">
+                    <input type="text" class="input" name="search">
+                    <button type="submit" class="btn">查询</button>
+                </div>
+            </div>
+        </form>
+
+        <table class="table">
+            <th></th>
+            <th>ID</th>
+            <th>基站名</th>
+            <th>IP地址</th>
+            <th>开放端口</th>
+            <th>协议类型</th>
+            <th>接入频率</th>
+            <th>状态</th>
+            <!--<tr>{{search_error}}</tr>-->
+            <form class="form-horizontal" role="form" method="post">
+                <!--show ip list-->
+                {% if show_list %}
+                {% for ip in show_list %}
+                <tr>
+                    <td><input type="checkbox" class="checkbox" name="post_ip" value="{{ ip.basename }}"></td>
+                    <td>{{ip.id}}</td>
+                    <td><a href="/mod_ip/?ip={{ ip.basename }}">{{ ip.basename }}</a></td>
+                    <td>{{ ip.ipaddr }}</td>
+                    <td>{{ ip.ports }}</td>
+                    <td>{{ ip.ostype }}</td>
+                    <td>{{ ip.rate }}</td>
+                    <!--<td>{{ ip.status }}</td>-->
+                    <!--<td class="testswitch">-->
+                        <!--<input class="testswitch-checkbox" id={{ ip.basename }} type="checkbox">-->
+			              <!--<label class="testswitch-label" for={{ ip.basename }}>-->
+				              <!--<span class="testswitch-inner" data-on="启动" data-off="关闭"></span>-->
+                              <!--&lt;!&ndash;#ON对应启动，OFF对应关闭onoffswitch&ndash;&gt;-->
+				              <!--<span class="testswitch-switch"></span>-->
+			              <!--</label>-->
+                    <!--</td>-->
+                    <td class="testswitch">
+                         <div align="left" style="float:left">
+                          <!--<input type="button" id="show" style="background-color:green;width:80px;" value="启动"onclick="login('XHRT','127.0.0.1','2253')"/>-->
+                          <input type="button" id="{{ ip.basename }}" style="background-color:green;width:80px;" value="启动"onclick="login('{{ ip.basename }}','{{ ip.ipaddr }}','{{ ip.ports }}')"/>
+                          <!--<input type="button" id="show" style="background-color:green;width:80px;" value="启动"onclick="login()"/>-->
+                          </div>
+                         <div align="right">
+                          <input type="button" id="{{ ip.ports }}"style="display:none;background-color:red;width:80px" value="关闭" onclick="cancle('{{ ip.basename }}','{{ ip.ipaddr }}','{{ ip.ports }}')"/>
+                          </div>
+                    </td>
+                </tr>
+                <!--<script src="vue.js" type="text/javascript" charset="utf-8"></script>-->
+                <script type="text/javascript" src="/static/js/jquery-2.1.4.js"></script>
+                <script  type="text/javascript">
+                    $(document).ready(function(){
+                        var sta ={{ ip.status }};
+                        if（sta=="OFF"){
+                        $("#{{{ip.basename}}").show();
+                        $("#{{ip.port}}").hide();
+                        } else{
+                         $("#{{ip.port}}").show();
+                        $("#{ip.basename}}").hide();
+                        }
+                        $("#{{ ip.basename }}").click(function(){
+                            $(this).hide();
+                            $("#{{ ip.ports }}").show();
+                            {#json数据#}
+                                var post_data={
+                                    "name":"weihu",
+                                };
+                            $.ajax({
+                            url:"ip_manage/ajax",
+                            type:"POST",
+                            {#发送json数据到服务器#}
+                            data:post_data,
+
+                            {#请求成功回调函数#}
+                            success:function (data) {
+                                alert(data)
+                                alert("请求成功")
+                            },
+                            {#请求失败回调函数#}
+                            error:function () {
+                                alert("服务器请求超时,请重试!")
+                            }
+
+                        });
+                        });
+                        $("#{{ ip.ports }}").click(function(){
+                            $(this).hide();
+                            $("#{{ ip.basename }}").show();
+                        });
+                     });
+                    function  login(name,ipaddr,port){
+                        alert("姓名"+name+";IP:"+ipaddr+";端口:"+port);
+
+                        <!--obj = models.UserInfo.objects.get(basename=name);-->
+                        <!--if（obj.status =='OFF'){-->
+                        <!--obj.status = 'ON';-->
+                        <!--obj.save();-->
+                        <!--}-->
+                     }
+                    function  cancle(name,ipaddr,port){
+                        alert("姓名"+name+";IP:"+ipaddr+";端口:"+port);
+                        <!--obj = models.UserInfo.objects.get(basename=name);-->
+                        <!--if（obj.status =='OFF'){-->
+                        <!--obj.status = 'ON';-->
+                        <!--obj.save();-->
+                        <!--}-->
+                    }
+
+                </script>
+                {% endfor %}
+                <button type="submit" class="btn">删除</button>
+
+                {%endif%}
+            </form>
+        </table>
+
+
+        {% if paginator.page_range %}
+        <ul class="pagination">
+            {% if show_list.has_previous %}
+            <li><a href="?page={{ show_list.previous_page_number }}&search={{ s_text }}">&laquo;</a></li>
+            {% endif %}
+            {% for i in paginator.page_range %}
+            <li><a href="?page={{i}}&search={{ s_text }}" name="page">{{ i }}</a></li>
+            {%endfor%}
+            {% if show_list.has_next %}
+            <li><a href="?page={{ show_list.next_page_number }}&search={{ s_text }}">&raquo;</a></li>
+            {% endif %}
+        </ul>
+        {% endif %}
+
+        {% endblock %}
+    </div>
+
+</div>
+{% endblock %}
+
+</html>

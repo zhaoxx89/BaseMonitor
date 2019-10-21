@@ -1,0 +1,131 @@
+{% extends 'base.html' %}
+{% block content %}
+<script src="/static/js/echarts.js"></script>
+<script src="/static/js/echarts.min.js"></script>
+<script src="/static/js/jquery-2.1.4.js"></script>
+<script src="/static/js/echarts.common.min.js"></script>
+
+            <div class="row-fluid">
+                <div class="span3">
+                    <div class="well sidebar-nav">
+                    <ul class="nav nav-list">
+                         <li class="active">
+                            <a href="/ip_manage/">IP列表</a>
+                        </li>
+                        <li>
+                            <a href="/dev_manage/">基站数据列表</a>
+                        </li>
+                        <li>
+                            <a href="/add_ip/">添加IP</a>
+                        </li>
+                        <li>
+                             <a href="/add_dev/">查看设备</a>
+                        </li>
+                    </ul>
+                    </div>
+                </div>
+                <div id="main"class="span9 well"  >
+                    <div style="position: relative; overflow: hidden; width: 1218px; height: 483px;">
+                        <div data-zr-dom-id="bg" class="zr-element" style="position: absolute; left: 0px; top: 0px; width: 1218px; height: 493px; user-select: none;"></div>
+                        <canvas   id="myCanvas"width="829" height="492" data-zr-dom-id="0" class="zr-element" style="position: absolute; left: 0px; top: 0px; width: 800px; height: 483px; user-select: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0);"></canvas>
+                    </div>
+                 </div>
+                <div >
+                    <button type="button" id="" class="btn btn-sm btn-success" onclick="refresh()">刷 新</button>
+                        <span class="text-primary" method="post">切换基站</span>
+                            <select id="base" name="choose" style="color:blue">
+                                <option value="">请选择基站</option>
+                                 {% for name in name_status %}
+                                <option value="{{name.basename}}">{{name.basename}}</option>
+                                {% endfor %}
+                            </select>
+                        <span id="wrong-message" style="color:red"></span>
+                </div>
+{% block javascripts %}
+                <script type="text/javascript">
+ // 基于准备好的dom，初始化echarts实例
+  var myChart = echarts.init(document.getElementById('myCanvas'));
+ // 显示标题，图例和空的坐标轴
+    myChart.setOption({
+        title: {
+            text: '基站数据加载'
+        },
+        tooltip: {},
+        legend: {
+            data:['字节']
+        },
+        xAxis: {
+            data: []
+        },
+        yAxis: {},
+        series: [{
+            name: '字节',
+            type: 'line',
+            data: []
+        }]
+    });
+
+    myChart.showLoading();    //数据加载完之前先显示一段简单的loading动画
+
+     var names=[];    //类别数组（实际用来盛放X轴坐标值）
+     var nums=[];    //销量数组（实际用来盛放Y坐标值）
+     var server_info;
+     function refresh() {
+         var start = $('#base').val();
+         // var start ="base";
+         if(start===""){
+         }
+         else{
+            $.ajax({
+                url:"{% url "getshow" %}",
+                //发出请求的地址-->
+                 type:"POST",
+                 {#发送json数据到服务器#}
+                    data:{
+                    'name':start,
+                    },
+                    dataType: "json",      //返回数据形式为json
+                    success : function(result) {
+                     //请求成功时执行该函数内容，result即为服务器返回的json对象
+    if (result) {
+
+                     var len = result.name.length;
+                     var nameList  = result.name;
+                     var lenList = result.jq;
+                     console.log(len);
+                     for(var i = 0; i < len; i++){
+                          names.push(nameList[i]);
+                          nums.push(lenList[i])
+                     }
+
+
+                         myChart.hideLoading();    //隐藏加载动画
+                        myChart.setOption({        //加载数据图表
+                            xAxis: {
+                                data: names
+                            },
+                            series: [{
+                                // 根据名字对应到相应的系列
+                                name: '销量',
+                                data: nums
+                            }]
+                        });
+
+                    }
+
+                 },
+                            error : function(errorMsg) {
+                            //请求失败时执行该函数
+                            alert("图表请求数据失败!");
+                            myChart.hideLoading();
+                }
+            })
+        }
+};
+
+
+        </script>
+{% endblock %}
+
+            </div>
+{% endblock %}

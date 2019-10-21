@@ -1,0 +1,133 @@
+{% extends 'ip_manage.html' %}
+{% block showpage %}
+<form class="form-horizontal" role="form" method="post">
+{% if ip_info %}
+
+  <div class="control-group">
+    <label class="control-label">基站名</label>
+    <div class="controls">
+      <input type="text" class="input-block-level" name="basename" value="{{ip_info.basename}}"></div>
+  </div>
+  <div class="control-group">
+    <label class="control-label">IP地址</label>
+    <div class="controls">
+      <p class="control-label">{{ip_info.ipaddr}}</p></div>
+  </div>
+  <div class="control-group">
+    <label class="control-label">端口</label>
+    <div class="controls">
+      <input type="text" class="input-block-level" name="ports" value="{{ip_info.ports}}"></div>
+  </div>
+  <div class="control-group">
+    <label class="control-label">协议类型</label>
+    <div class="controls">
+      <input type="text" class="input-block-level" name="ostype" value="{{ip_info.ostype}}"></div>
+  </div>
+
+  <div class="control-group">
+    <label class="control-label">频率</label>
+    <div class="controls">
+      <input type="text" class="input-block-level" name="rate" value="{{ip_info.rate}}"></div>
+  </div>
+  <div class="control-group">
+    <label class="control-label">状态</label>
+    <div class="controls">
+      <input type="text" class="input-block-level" name="status" value="{{ip_info.status}}"></div>
+  </div>
+{% else %}
+
+  <div class="control-group">
+    <label class="control-label">基站名</label>
+    <div class="controls">
+      <input type="text" class="input-block-level" placeholder="4-6个大写字母尾部可为数字" name="basename" required="required"></div>
+  </div>
+  <div class="control-group">
+    <label class="control-label">IP地址</label>
+    <div class="controls">
+      <input type="text" class="input-block-level" placeholder="127.0.0.1" name="ipaddr" required="required" ONBLUR="checkPsw(this)"></div>
+  </div>
+
+  <div class="control-group">
+    <label class="control-label">端口</label>
+    <div class="controls">
+      <input type="text" class="input-block-level" placeholder="4-6个数字" name="ports" required="required"></div>
+  </div>
+  <div class="control-group">
+    <label class="control-label">协议类型</label>
+    <div class="controls">
+      <!--<input type="text" class="input-block-level" name="ostype"></div>-->
+      <select  required="required" name="ostype">
+      <option value="client" selected="selected"(默认选中项)>TCPclient</option>
+      <option value="server">TCPserver</option>
+      <option value="Ntrip">NtripClient</option>
+      </select></div>
+  </div>
+  <div class="control-group">
+    <label class="control-label">接入频率</label>
+    <div class="controls">
+      <input type="text" class="input-block-level"  placeholder="1s" name="rate" required="required"></div>
+      <!--<select  required="required"name="rate" >-->
+      <!--<option value="1s">TCP/client</option>-->
+      <!--<option value="15s">TCP/server</option>-->
+      <!--<option value="30s">NtripClient</option>-->
+      <!--</select></div>-->
+  </div>
+  <div class="control-group">
+    <label class="control-label">状态</label>
+    <div class="controls">
+      <input type="text" class="input-block-level" name="status" value="OFF" required="required" readonly="readonly"></div>
+      <!--&lt;!&ndash;<div role="switch" aria-checked="true" class="el-switch is-checked"><input type="checkbox" name="status" true-value="fasle" class="el-switch__input">&ndash;&gt;-->
+        <!--&lt;!&ndash;&lt;!&ndash;&ndash;&gt;<span class="el-switch__core" style="width: 40px; border-color: rgb(23, 179, 163); background-color: rgb(23, 179, 163);">&ndash;&gt;-->
+          <!--&lt;!&ndash;<span class="el-switch__button" style="transform: translate3d(20px, 0px, 0px);"></span>&ndash;&gt;-->
+        <!--&lt;!&ndash;</span>&lt;!&ndash;&ndash;&gt;&ndash;&gt;-->
+      <!--&lt;!&ndash;</div>&ndash;&gt;-->
+  </div>
+
+  <script type="text/javascript">
+
+function validate_required(field,alerttxt)
+{
+with (field)
+  {
+  if (value==null||value=="")
+    {alert(alerttxt);return false}
+  else {return true}
+  }
+}
+function validate_ipaddr(strIP) {
+var ip = document.getElementById('ipaddr').value;
+if (isNull(ip)) return false;
+var re=/^(\d+)\.(\d+)\.(\d+)\.(\d+)$/g //匹配IP地址的正则表达式
+if(re.test(ip))
+{
+if( RegExp.$1 <256 && RegExp.$2<256 && RegExp.$3<256 && RegExp.$4<256) return true;
+}
+return false;
+}
+function checkPsw(strIP)
+    {
+       if (isNull(strIP)) return false;
+        var re=/^(\d+)\.(\d+)\.(\d+)\.(\d+)$/g //匹配IP地址的正则表达式
+        if(re.test(strIP))
+          {
+            if( RegExp.$1 <256 && RegExp.$2<256 && RegExp.$3<256 && RegExp.$4<256) return true;
+          }
+        return false;
+
+    }
+
+</script>
+
+{% endif %}
+
+  <div class="control-group">
+    <div class="controls">
+      <p>{{ add_error }}</p>
+      <button type="submit" class="btn">提交</button>
+      <a class="btn" href="/add_ip/">取消</a>
+      <!--<a class="btn" href="/ip_manage/">取消</a>-->
+    </div>
+  </div>
+</form>
+
+{% endblock %}
